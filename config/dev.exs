@@ -1,5 +1,12 @@
 import Config
 
+config :order_book, OrderBook.EventStore,
+  serializer: EventStore.JsonSerializer,
+  username: "postgres",
+  password: "postgres",
+  database: "postgres",
+  hostname: "localhost"
+
 # Configure your database
 config :order_book, OrderBook.Repo,
   username: "postgres",
