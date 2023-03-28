@@ -32,6 +32,10 @@ defmodule OrderBook.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:exconstructor, "~> 1.2.7"},
+      {:uuid, "~> 1.1"},
+      {:commanded_ecto_projections, "~> 1.3"},
+      {:commanded_eventstore_adapter, "~> 1.4"},
       {:eventstore, "~> 1.4"},
       {:commanded, "~> 1.4"},
       {:bcrypt_elixir, "~> 3.0"},
@@ -64,6 +68,8 @@ defmodule OrderBook.MixProject do
   defp aliases do
     [
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      reset: ["event_store.reset", "ecto.reset"],
+      "event_store.reset": ["event_store.drop", "event_store.create", "event_store.init"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],

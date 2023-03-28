@@ -8,6 +8,9 @@ defmodule OrderBook.Accounts do
 
   alias OrderBook.Accounts.{User, UserToken, UserNotifier}
 
+  alias OrderBook.App
+  alias OrderBook.Accounts.Commands.RegisterUser
+
   ## Database getters
 
   @doc """
@@ -75,9 +78,25 @@ defmodule OrderBook.Accounts do
 
   """
   def register_user(attrs) do
-    %User{}
-    |> User.registration_changeset(attrs)
-    |> Repo.insert()
+    uuid = UUID.uuid4()
+
+    register_user =
+      attrs
+      |> RegisterUser.new()
+      |> RegisterUser.assign_id(uuid)
+      |> RegisterUser.downcase_email()
+      |> RegisterUser.hash_password()
+
+    with :ok <- App.dispatch(register_user, consistency: :strong) do
+      get(User, uuid)
+    end
+  end
+
+  defp get(schema, uuid) do
+    case Repo.get(schema, uuid) do
+      nil -> {:error, :not_found}
+      projection -> {:ok, projection}
+    end
   end
 
   @doc """

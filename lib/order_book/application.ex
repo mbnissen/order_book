@@ -16,10 +16,12 @@ defmodule OrderBook.Application do
       {Phoenix.PubSub, name: OrderBook.PubSub},
       # Start Finch
       {Finch, name: OrderBook.Finch},
-      # Start EventStore
-      OrderBook.EventStore,
+      # Start Commanded
+      OrderBook.App,
       # Start the Endpoint (http/https)
-      OrderBookWeb.Endpoint
+      OrderBookWeb.Endpoint,
+      # Start Accounts context supervisor
+      OrderBook.Accounts.Supervisor
       # Start a worker by calling: OrderBook.Worker.start_link(arg)
       # {OrderBook.Worker, arg}
     ]

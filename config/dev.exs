@@ -4,7 +4,7 @@ config :order_book, OrderBook.EventStore,
   serializer: EventStore.JsonSerializer,
   username: "postgres",
   password: "postgres",
-  database: "postgres",
+  database: "eventstore_dev",
   hostname: "localhost"
 
 # Configure your database

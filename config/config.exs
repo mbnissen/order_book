@@ -7,8 +7,6 @@
 # General application configuration
 import Config
 
-config :order_book, OrderBook.EventStore, serializer: Commanded.Serialization.JsonSerializer
-
 config :order_book, event_stores: [OrderBook.EventStore]
 
 config :order_book, OrderBook.App,
@@ -18,6 +16,8 @@ config :order_book, OrderBook.App,
   ],
   pubsub: :local,
   registry: :local
+
+config :order_book, OrderBook.EventStore, serializer: Commanded.Serialization.JsonSerializer
 
 config :order_book,
   ecto_repos: [OrderBook.Repo],
