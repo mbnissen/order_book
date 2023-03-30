@@ -4,8 +4,8 @@ defmodule OrderBook.Trading.Queries.ListTransactionsForOwner do
   alias OrderBook.Trading.Projections.Transaction
 
   def new(owner_id) do
-    from(a in Transaction,
-      where: a.owner_id == ^owner_id
-    )
+    Transaction
+    |> where([t], t.owner_id == ^owner_id)
+    |> order_by([t], desc: t.transaction_time)
   end
 end
