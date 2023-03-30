@@ -21,7 +21,9 @@ defmodule OrderBook.Application do
       # Start the Endpoint (http/https)
       OrderBookWeb.Endpoint,
       # Start Accounts context supervisor
-      OrderBook.Accounts.Supervisor
+      OrderBook.Accounts.Supervisor,
+      # Start Trading context supervisor
+      OrderBook.Trading.Supervisor
       # Start a worker by calling: OrderBook.Worker.start_link(arg)
       # {OrderBook.Worker, arg}
     ]
