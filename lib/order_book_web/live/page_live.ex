@@ -9,7 +9,15 @@ defmodule OrderBookWeb.PageLive do
   @impl true
   def render(assigns) do
     ~H"""
-    hello
+    <div class="flex gap-4">
+      <div>
+        <%= live_render(@socket, OrderBookWeb.ListAccountsLive,
+          id: "list_accounts",
+          session: %{"user_id" => @current_user.id}
+        ) %>
+      </div>
+      <div>hello</div>
+    </div>
     """
   end
 end

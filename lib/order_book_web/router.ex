@@ -17,12 +17,6 @@ defmodule OrderBookWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", OrderBookWeb do
-    pipe_through :browser
-
-    live "/", PageLive
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", OrderBookWeb do
   #   pipe_through :api
@@ -66,6 +60,7 @@ defmodule OrderBookWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{OrderBookWeb.UserAuth, :ensure_authenticated}] do
+      live "/", PageLive
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end
