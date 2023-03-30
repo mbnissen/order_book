@@ -10,6 +10,7 @@ defmodule OrderBook.Trading.Supervisor do
   def init(_arg) do
     Supervisor.init(
       [
+        Trading.Projectors.Account,
         Trading.Workflows.CreateAccountFromUser
       ],
       strategy: :one_for_one
