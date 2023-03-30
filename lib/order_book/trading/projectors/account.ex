@@ -3,7 +3,7 @@ defmodule OrderBook.Trading.Projectors.Account do
     application: OrderBook.App,
     name: "Trading.Projectors.Account",
     repo: OrderBook.Repo,
-    consistency: :strong
+    consistency: :eventual
 
   alias OrderBook.Repo
 

@@ -1,5 +1,5 @@
 defmodule OrderBook.Trading.Commands.PlaceOrder do
-  defstruct [:order_id, :account_id, :type, :quantity, :symbol, :price]
+  defstruct [:order_id, :account_id, :type, :quantity, :currency, :price]
 
   use ExConstructor
 
@@ -11,6 +11,6 @@ defmodule OrderBook.Trading.Commands.PlaceOrder do
   end
 
   def assign_account(%PlaceOrder{} = command, %Account{} = account) do
-    %PlaceOrder{command | account_id: account.id, symbol: account.currency}
+    %PlaceOrder{command | account_id: account.id, currency: account.currency}
   end
 end

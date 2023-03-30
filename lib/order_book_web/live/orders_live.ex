@@ -4,16 +4,20 @@ defmodule OrderBookWeb.OrdersLive do
 
   @impl true
   def mount(_params, %{"user_id" => user_id}, socket) do
-    {:ok, assign(socket, :user_id, user_id)}
+    {:ok,
+     socket
+     |> stream(:orders, Trading.list_orders_for_user(user_id))
+     |> assign(:user_id, user_id)}
   end
 
   @impl true
   def handle_event("place_order", params, socket) do
-    :ok =
+    {:ok, order} =
       Trading.account_by_symbol(socket.assigns.user_id, "BTC")
       |> Trading.place_order(params)
+      |> dbg()
 
-    {:noreply, socket}
+    {:noreply, stream_insert(socket, :orders, order, at: 0)}
   end
 
   @impl true
@@ -30,6 +34,22 @@ defmodule OrderBookWeb.OrdersLive do
         </:actions>
       </.simple_form>
     </div>
+    <.table id="orders" rows={@streams.orders}>
+      <:col :let={{_id, order}} label="Quantity">
+        <.money amount={order.quantity} currency={order.currency} />
+      </:col>
+      <:col :let={{_id, order}} label="Price">
+        <.money amount={order.price} currency={order.currency} />
+      </:col>
+      <:col :let={{_id, order}} label="State">
+        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full dark:bg-green-900 dark:text-green-300">
+          <%= order.state %>
+        </span>
+      </:col>
+      <:col :let={{_id, order}} label="Placed">
+        <%= Cldr.DateTime.to_string!(order.placed_at, OrderBook.Cldr, format: :short) %>
+      </:col>
+    </.table>
     """
   end
 end

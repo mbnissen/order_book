@@ -1,5 +1,5 @@
 defmodule OrderBook.Trading.Aggregates.Order do
-  defstruct [:id, :account_id, :type, :quantity, :symbol, :price]
+  defstruct [:id, :account_id, :type, :quantity, :currency, :price]
 
   alias __MODULE__
   alias OrderBook.Trading.Commands.PlaceOrder
@@ -11,7 +11,7 @@ defmodule OrderBook.Trading.Aggregates.Order do
       account_id: command.account_id,
       type: command.type,
       quantity: command.quantity,
-      symbol: command.symbol,
+      currency: command.currency,
       price: command.price
     }
   end
@@ -22,7 +22,7 @@ defmodule OrderBook.Trading.Aggregates.Order do
       account_id: event.account_id,
       type: event.type,
       quantity: event.quantity,
-      symbol: event.symbol,
+      currency: event.currency,
       price: event.price
     }
   end

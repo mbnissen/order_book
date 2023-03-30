@@ -1,7 +1,9 @@
 defmodule OrderBook.Trading do
+  alias OrderBook.Trading.Queries.ListOrdersForUser
   alias OrderBook.Repo
   alias OrderBook.App
 
+  alias OrderBook.Trading.Projections.Order
   alias OrderBook.Trading.Projections.Account
 
   alias OrderBook.Trading.Commands.{OpenAccount, DebitAccount, PlaceOrder}
@@ -27,17 +29,35 @@ defmodule OrderBook.Trading do
   end
 
   def place_order(%Account{} = account, attrs) do
+    dbg(account)
     uuid = UUID.uuid4()
 
-    attrs
-    |> PlaceOrder.new()
-    |> PlaceOrder.assign_id(uuid)
-    |> PlaceOrder.assign_account(account)
-    |> App.dispatch(consistency: :eventual)
+    place_order =
+      attrs
+      |> PlaceOrder.new()
+      |> PlaceOrder.assign_id(uuid)
+      |> PlaceOrder.assign_account(account)
+      |> dbg()
+
+    with :ok <- App.dispatch(place_order, consistency: :strong) do
+      get(Order, uuid)
+    end
+  end
+
+  defp get(schema, uuid) do
+    case Repo.get(schema, uuid) do
+      nil -> {:error, :not_found}
+      projection -> {:ok, projection}
+    end
   end
 
   def list_account_for_owner(owner_id) do
     ListAccountsForOwner.new(owner_id)
+    |> Repo.all()
+  end
+
+  def list_orders_for_user(user_id) do
+    ListOrdersForUser.new(user_id)
     |> Repo.all()
   end
 
