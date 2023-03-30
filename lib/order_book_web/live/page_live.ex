@@ -16,7 +16,12 @@ defmodule OrderBookWeb.PageLive do
           session: %{"user_id" => @current_user.id}
         ) %>
       </div>
-      <div>hello</div>
+      <div>
+        <%= live_render(@socket, OrderBookWeb.ListTransactionsLive,
+          id: "list_transactions",
+          session: %{"user_id" => @current_user.id}
+        ) %>
+      </div>
     </div>
     """
   end

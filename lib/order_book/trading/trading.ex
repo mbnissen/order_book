@@ -1,8 +1,8 @@
 defmodule OrderBook.Trading do
+  alias OrderBook.Trading.Queries.ListTransactionsForOwner
   alias OrderBook.Repo
   alias OrderBook.App
 
-  alias OrderBook.Trading.Projections.Account
   alias OrderBook.Trading.Queries.ListAccountsForOwner
   alias OrderBook.Trading.Commands.{OpenAccount, DebitAccount}
 
@@ -24,6 +24,11 @@ defmodule OrderBook.Trading do
 
   def list_account_for_owner(owner_id) do
     ListAccountsForOwner.new(owner_id)
+    |> Repo.all()
+  end
+
+  def list_transactions_for_owner(owner_id) do
+    ListTransactionsForOwner.new(owner_id)
     |> Repo.all()
   end
 end
