@@ -1,13 +1,21 @@
 defmodule OrderBookWeb.ListTransactionsLive do
   use OrderBookWeb, :live_view
 
+  alias OrderBook.UserPubSub
   alias OrderBook.Trading
 
   @impl true
   def mount(_params, %{"user_id" => user_id}, socket) do
+    if connected?(socket), do: UserPubSub.subscribe(user_id)
+
     transactions = Trading.list_transactions_for_owner(user_id)
 
     {:ok, stream(socket, :transactions, transactions)}
+  end
+
+  @impl true
+  def handle_info({:transaction_added, %{transaction: transaction}}, socket) do
+    {:noreply, stream_insert(socket, :transactions, transaction, at: 0)}
   end
 
   @impl true

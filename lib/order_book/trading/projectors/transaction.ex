@@ -1,4 +1,5 @@
 defmodule OrderBook.Trading.Projectors.Transaction do
+  alias OrderBook.UserPubSub
   alias OrderBook.Trading.Projections.Account
   alias OrderBook.Repo
   alias OrderBook.Trading.Events.AccountDebited
@@ -38,5 +39,10 @@ defmodule OrderBook.Trading.Projectors.Transaction do
       nil -> {:error, :account_not_found}
       account -> {:ok, account}
     end
+  end
+
+  @impl true
+  def after_update(%AccountDebited{}, _metadata, %{transaction: transaction}) do
+    UserPubSub.transaction_added(transaction)
   end
 end
