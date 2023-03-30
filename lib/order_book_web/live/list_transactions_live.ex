@@ -16,10 +16,14 @@ defmodule OrderBookWeb.ListTransactionsLive do
     <h2 class="text-xl text-slate-700">Transactions</h2>
     <.table id="transactions" rows={@streams.transactions}>
       <:col :let={{_id, transaction}} label="Amount">
-        <%= transaction.amount %> <%= transaction.currency %>
+        <.money amount={transaction.amount} currency={transaction.currency} />
       </:col>
-      <:col :let={{_id, transaction}} label="Balance before"><%= transaction.balance_before %></:col>
-      <:col :let={{_id, transaction}} label="Balance after"><%= transaction.balance_after %></:col>
+      <:col :let={{_id, transaction}} label="Balance before">
+        <.money amount={transaction.balance_before} currency={transaction.currency} />
+      </:col>
+      <:col :let={{_id, transaction}} label="Balance after">
+        <.money amount={transaction.balance_after} currency={transaction.currency} />
+      </:col>
     </.table>
     """
   end

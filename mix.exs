@@ -32,6 +32,7 @@ defmodule OrderBook.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ex_cldr_numbers, "~> 2.0"},
       {:exconstructor, "~> 1.2.7"},
       {:uuid, "~> 1.1"},
       {:commanded_ecto_projections, "~> 1.3"},

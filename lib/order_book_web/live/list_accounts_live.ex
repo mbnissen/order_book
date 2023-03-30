@@ -26,7 +26,9 @@ defmodule OrderBookWeb.ListAccountsLive do
     <h2 class="text-xl text-slate-700">Accounts</h2>
     <.table id="accounts" rows={@streams.accounts}>
       <:col :let={{_id, account}} label="Currency"><%= account.currency %></:col>
-      <:col :let={{_id, account}} label="Amount"><%= account.balance %></:col>
+      <:col :let={{_id, account}} label="Amount">
+        <.money amount={account.balance} currency={account.currency} />
+      </:col>
       <:col :let={{_id, account}}>
         <.button
           class="text-xs py-1"

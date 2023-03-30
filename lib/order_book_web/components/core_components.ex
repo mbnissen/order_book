@@ -12,6 +12,17 @@ defmodule OrderBookWeb.CoreComponents do
 
   alias Phoenix.LiveView.JS
 
+  attr :amount, :integer, required: true
+  attr :currency, :string, required: true
+
+  def money(assigns) do
+    ~H"""
+    <span>
+      <%= OrderBook.Cldr.Number.to_string!(@amount, locale: :da, currency: @currency) %>
+    </span>
+    """
+  end
+
   @doc """
   Renders a modal.
 
@@ -160,12 +171,7 @@ defmodule OrderBookWeb.CoreComponents do
         <%= @title %>
       </p>
       <p class="mt-2 text-[0.8125rem] leading-5"><%= msg %></p>
-      <button
-        :if={@close}
-        type="button"
-        class="group absolute top-2 right-1 p-2"
-        aria-label="close"
-      >
+      <button :if={@close} type="button" class="group absolute top-2 right-1 p-2" aria-label="close">
         <.icon name="hero-x-mark-solid" class="w-5 h-5 opacity-40 group-hover:opacity-70" />
       </button>
     </div>
