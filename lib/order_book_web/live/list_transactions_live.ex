@@ -36,6 +36,9 @@ defmodule OrderBookWeb.ListTransactionsLive do
       <:col :let={{_id, transaction}} label="Balance after">
         <.money amount={transaction.balance_after} currency={transaction.currency} />
       </:col>
+      <:col :let={{_id, transaction}} label="Transaction time">
+        <%= Cldr.DateTime.to_string!(transaction.transaction_time, OrderBook.Cldr, format: :short) %>
+      </:col>
     </.table>
     """
   end
