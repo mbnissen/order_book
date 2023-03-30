@@ -3,8 +3,9 @@ defmodule OrderBook.Trading.Aggregates.Account do
 
   alias __MODULE__
 
+  alias OrderBook.Trading.Commands.DebitAccount
   alias OrderBook.Trading.Commands.OpenAccount
-  alias OrderBook.Trading.Events.AccountOpened
+  alias OrderBook.Trading.Events.{AccountOpened, AccountDebited}
 
   def execute(%Account{id: nil}, %OpenAccount{} = command) do
     %AccountOpened{
@@ -12,6 +13,19 @@ defmodule OrderBook.Trading.Aggregates.Account do
       owner_id: command.owner_id,
       initial_balance: command.initial_balance,
       currency: command.currency
+    }
+  end
+
+  def execute(
+        %Account{balance: balance, currency: currency},
+        %DebitAccount{amount: amount, currency: currency} = command
+      ) do
+    %AccountDebited{
+      account_id: command.account_id,
+      amount: amount,
+      currency: command.currency,
+      old_balance: balance,
+      new_balance: balance - amount
     }
   end
 
@@ -23,5 +37,9 @@ defmodule OrderBook.Trading.Aggregates.Account do
         balance: event.initial_balance,
         currency: event.currency
     }
+  end
+
+  def apply(%Account{balance: balance} = account, %AccountDebited{amount: amount}) do
+    %Account{account | balance: balance - amount}
   end
 end
