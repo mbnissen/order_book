@@ -20,9 +20,7 @@ defmodule OrderBookWeb.UserForgotPasswordLive do
         </:actions>
       </.simple_form>
       <p class="text-center mt-4">
-        <.link href={~p"/users/register"}>Register</.link>
-        |
-        <.link href={~p"/users/log_in"}>Log in</.link>
+        <.link href={~p"/users/register"}>Register</.link> | <.link href={~p"/users/log_in"}>Log in</.link>
       </p>
     </div>
     """
@@ -40,8 +38,7 @@ defmodule OrderBookWeb.UserForgotPasswordLive do
       )
     end
 
-    info =
-      "If your email is in our system, you will receive instructions to reset your password shortly."
+    info = "If your email is in our system, you will receive instructions to reset your password shortly."
 
     {:noreply,
      socket
