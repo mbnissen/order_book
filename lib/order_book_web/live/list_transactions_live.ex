@@ -18,6 +18,10 @@ defmodule OrderBookWeb.ListTransactionsLive do
     {:noreply, stream_insert(socket, :transactions, transaction, at: 0)}
   end
 
+  # Ignore other events
+  @impl true
+  def handle_info(_, socket), do: {:noreply, socket}
+
   @impl true
   def render(assigns) do
     ~H"""

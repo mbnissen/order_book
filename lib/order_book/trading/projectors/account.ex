@@ -5,11 +5,14 @@ defmodule OrderBook.Trading.Projectors.Account do
     repo: OrderBook.Repo,
     consistency: :strong
 
+  alias OrderBook.Repo
+
+  alias OrderBook.UserPubSub
   alias OrderBook.Trading.Projections.Account
   alias OrderBook.Trading.Events.{AccountOpened, AccountDebited}
 
   project(%AccountOpened{} = event, fn multi ->
-    Ecto.Multi.insert(multi, :user, %Account{
+    Ecto.Multi.insert(multi, :account, %Account{
       id: event.account_id,
       owner_id: event.owner_id,
       balance: event.initial_balance,
@@ -18,14 +21,22 @@ defmodule OrderBook.Trading.Projectors.Account do
   end)
 
   project(%AccountDebited{account_id: account_id, new_balance: new_balance}, fn multi ->
-    update_account(multi, account_id, balance: new_balance)
+    multi
+    |> Ecto.Multi.run(:account, fn _repo, _changes -> get_account(account_id) end)
+    |> Ecto.Multi.update(:updated_account, fn %{account: account} ->
+      Ecto.Changeset.change(account, balance: new_balance)
+    end)
   end)
 
-  defp update_account(multi, account_id, changes) do
-    Ecto.Multi.update_all(multi, :account, account_query(account_id), set: changes)
+  defp get_account(uuid) do
+    case Repo.get(Account, uuid) do
+      nil -> {:error, :account_not_found}
+      account -> {:ok, account}
+    end
   end
 
-  defp account_query(account_id) do
-    from(a in Account, where: a.id == ^account_id)
+  @impl true
+  def after_update(%AccountDebited{}, _metadata, %{updated_account: account}) do
+    UserPubSub.account_updated(account)
   end
 end

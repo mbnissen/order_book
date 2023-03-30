@@ -1,9 +1,13 @@
 defmodule OrderBookWeb.ListAccountsLive do
-  alias OrderBook.Trading
   use OrderBookWeb, :live_view
+
+  alias OrderBook.UserPubSub
+  alias OrderBook.Trading
 
   @impl true
   def mount(_params, %{"user_id" => user_id}, socket) do
+    if connected?(socket), do: UserPubSub.subscribe(user_id)
+
     accounts = Trading.list_account_for_owner(user_id)
 
     {:ok, stream(socket, :accounts, accounts)}
@@ -21,8 +25,17 @@ defmodule OrderBookWeb.ListAccountsLive do
   end
 
   defp debit_account(account_id, currency) do
-    Trading.debit_account(account_id, %{amount: 1000, currency: currency})
+    Trading.debit_account(account_id, %{amount: 100, currency: currency})
   end
+
+  @impl true
+  def handle_info({:account_updated, %{account: account}}, socket) do
+    {:noreply, stream_insert(socket, :accounts, account)}
+  end
+
+  # Ignore other events
+  @impl true
+  def handle_info(_, socket), do: {:noreply, socket}
 
   @impl true
   def render(assigns) do
