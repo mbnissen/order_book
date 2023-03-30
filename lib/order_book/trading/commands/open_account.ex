@@ -13,7 +13,11 @@ defmodule OrderBook.Trading.Commands.OpenAccount do
     %OpenAccount{command | owner_id: owner_id}
   end
 
+  def assign_initial_balance(%OpenAccount{currency: "BTC"} = command) do
+    %OpenAccount{command | initial_balance: 100}
+  end
+
   def assign_initial_balance(%OpenAccount{} = command) do
-    %OpenAccount{command | initial_balance: 1000}
+    %OpenAccount{command | initial_balance: 10000}
   end
 end

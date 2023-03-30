@@ -9,7 +9,7 @@ defmodule OrderBookWeb.PageLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex gap-8">
+    <div class="flex gap-20">
       <div>
         <%= live_render(@socket, OrderBookWeb.ListAccountsLive,
           id: "list_accounts",
