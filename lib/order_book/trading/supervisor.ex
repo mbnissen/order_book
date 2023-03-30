@@ -11,6 +11,7 @@ defmodule OrderBook.Trading.Supervisor do
     Supervisor.init(
       [
         Trading.Projectors.Account,
+        Trading.Projectors.Transaction,
         Trading.Workflows.CreateAccountFromUser
       ],
       strategy: :one_for_one
