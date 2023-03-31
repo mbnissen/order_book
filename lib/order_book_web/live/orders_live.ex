@@ -11,6 +11,7 @@ defmodule OrderBookWeb.OrdersLive do
     {:ok,
      socket
      |> stream(:orders, Trading.list_orders_for_user(user_id))
+     |> assign(form: to_form(%{}, as: :order))
      |> assign(:user_id, user_id)}
   end
 
@@ -59,7 +60,7 @@ defmodule OrderBookWeb.OrdersLive do
     ~H"""
     <h2 class="text-xl text-slate-700">Orders</h2>
     <div>
-      <.simple_form for={:order} id="order_form" phx-submit="place_order">
+      <.simple_form for={@form} id="order_form" phx-submit="place_order">
         <.input type="select" name="type" label="Type" options={~w"buy bell"} value={} />
         <.input type="number" name="quantity" label="Quantity (BTC)" id="amount" value={1} />
         <.input type="number" name="price" label="Price" id="price" value={1000} />
