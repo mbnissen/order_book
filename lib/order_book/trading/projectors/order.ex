@@ -60,4 +60,9 @@ defmodule OrderBook.Trading.Projectors.Order do
   def after_update(%OrderRejected{}, _metadata, %{updated_order: order}) do
     UserPubSub.order_updated(order)
   end
+
+  @impl true
+  def after_update(_, _, _) do
+    :ok
+  end
 end
