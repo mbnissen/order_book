@@ -1,9 +1,13 @@
 defmodule OrderBookWeb.OrdersLive do
-  alias OrderBook.Trading
   use OrderBookWeb, :live_view
+
+  alias OrderBook.Trading
+  alias OrderBook.UserPubSub
 
   @impl true
   def mount(_params, %{"user_id" => user_id}, socket) do
+    if connected?(socket), do: UserPubSub.subscribe(user_id)
+
     {:ok,
      socket
      |> stream(:orders, Trading.list_orders_for_user(user_id))
@@ -23,6 +27,31 @@ defmodule OrderBookWeb.OrdersLive do
       |> Trading.place_order(params)
 
     {:noreply, stream_insert(socket, :orders, order, at: 0)}
+  end
+
+  @impl true
+  def handle_info({:order_updated, %{order: order}}, socket) do
+    {:noreply, stream_insert(socket, :orders, order)}
+  end
+
+  # Ignore other events
+  @impl true
+  def handle_info(_, socket), do: {:noreply, socket}
+
+  def state_badge(%{state: "rejected"} = assigns) do
+    ~H"""
+    <span class="bg-rose-100 text-rose-800 text-xs font-medium px-2.5 py-1 rounded-full dark:bg-rose-900 dark:text-rose-300">
+      <%= @state %>
+    </span>
+    """
+  end
+
+  def state_badge(assigns) do
+    ~H"""
+    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full dark:bg-green-900 dark:text-green-300">
+      <%= @state %>
+    </span>
+    """
   end
 
   @impl true
@@ -47,9 +76,7 @@ defmodule OrderBookWeb.OrdersLive do
         <.money amount={order.price} currency={order.currency} />
       </:col>
       <:col :let={{_id, order}} label="State">
-        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full dark:bg-green-900 dark:text-green-300">
-          <%= order.state %>
-        </span>
+        <.state_badge state={order.state} />
       </:col>
       <:col :let={{_id, order}} label="Placed">
         <%= Cldr.DateTime.to_string!(order.placed_at, OrderBook.Cldr, format: :short) %>

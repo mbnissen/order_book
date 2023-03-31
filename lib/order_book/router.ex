@@ -1,6 +1,7 @@
 defmodule OrderBook.Router do
   use Commanded.Commands.Router
 
+  alias OrderBook.Trading.Commands.RejectOrder
   alias OrderBook.Trading.Commands.PlaceOrder
   alias OrderBook.Accounts.Aggregates.User
   alias OrderBook.Accounts.Commands.RegisterUser
@@ -14,4 +15,5 @@ defmodule OrderBook.Router do
   dispatch(DebitAccount, to: Account, identity: :account_id)
 
   dispatch(PlaceOrder, to: Order, identity: :order_id)
+  dispatch(RejectOrder, to: Order, identity: :order_id)
 end

@@ -6,6 +6,9 @@ defmodule OrderBook.Trading.Projectors.Order do
     consistency: :strong
 
   alias OrderBook.Repo
+  alias OrderBook.UserPubSub
+
+  alias OrderBook.Trading.Events.OrderRejected
 
   alias OrderBook.Trading.Projections.Account
   alias OrderBook.Trading.Projections.Order
@@ -31,10 +34,30 @@ defmodule OrderBook.Trading.Projectors.Order do
     end)
   end)
 
-  defp get_account(uuid) do
-    case Repo.get(Account, uuid) do
+  project(%OrderRejected{order_id: order_id}, fn multi ->
+    multi
+    |> Ecto.Multi.run(:order, fn _repo, _changes -> get_order(order_id) end)
+    |> Ecto.Multi.update(:updated_order, fn %{order: order} ->
+      Ecto.Changeset.change(order, state: "rejected")
+    end)
+  end)
+
+  defp get_order(id) do
+    case Repo.get(Order, id) do
+      nil -> {:error, :order_not_found}
+      order -> {:ok, order}
+    end
+  end
+
+  defp get_account(id) do
+    case Repo.get(Account, id) do
       nil -> {:error, :account_not_found}
       account -> {:ok, account}
     end
+  end
+
+  @impl true
+  def after_update(%OrderRejected{}, _metadata, %{updated_order: order}) do
+    UserPubSub.order_updated(order)
   end
 end
