@@ -29,7 +29,6 @@ defmodule OrderBook.Trading do
   end
 
   def place_order(%Account{} = account, attrs) do
-    dbg(account)
     uuid = UUID.uuid4()
 
     place_order =
@@ -37,7 +36,6 @@ defmodule OrderBook.Trading do
       |> PlaceOrder.new()
       |> PlaceOrder.assign_id(uuid)
       |> PlaceOrder.assign_account(account)
-      |> dbg()
 
     with :ok <- App.dispatch(place_order, consistency: :strong) do
       get(Order, uuid)

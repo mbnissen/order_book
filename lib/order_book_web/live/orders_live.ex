@@ -21,7 +21,6 @@ defmodule OrderBookWeb.OrdersLive do
       params
       |> Map.put("price", String.to_integer(price))
       |> Map.put("quantity", String.to_integer(quantity))
-      |> dbg()
 
     {:ok, order} =
       Trading.account_by_symbol(socket.assigns.user_id, "BTC")
