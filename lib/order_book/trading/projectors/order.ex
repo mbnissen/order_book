@@ -22,9 +22,8 @@ defmodule OrderBook.Trading.Projectors.Order do
         type: event.type,
         currency: event.currency,
         state: "placed",
-        # TODO do this in a different way
-        quantity: String.to_integer(event.quantity),
-        price: String.to_integer(event.price),
+        quantity: event.quantity,
+        price: event.price,
         placed_at: placed_at
       }
 

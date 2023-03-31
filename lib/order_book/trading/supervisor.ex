@@ -14,7 +14,8 @@ defmodule OrderBook.Trading.Supervisor do
         Trading.Projectors.Transaction,
         Trading.Projectors.Order,
         Trading.Workflows.CreateAccountFromUser,
-        Trading.Workflows.CreateBTCAccountFromUser
+        Trading.Workflows.CreateBTCAccountFromUser,
+        Trading.ProcessManagers.OrderProcessManager
       ],
       strategy: :one_for_one
     )

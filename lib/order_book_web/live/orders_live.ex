@@ -11,11 +11,16 @@ defmodule OrderBookWeb.OrdersLive do
   end
 
   @impl true
-  def handle_event("place_order", params, socket) do
+  def handle_event("place_order", %{"price" => price, "quantity" => quantity} = params, socket) do
+    params =
+      params
+      |> Map.put("price", String.to_integer(price))
+      |> Map.put("quantity", String.to_integer(quantity))
+      |> dbg()
+
     {:ok, order} =
       Trading.account_by_symbol(socket.assigns.user_id, "BTC")
       |> Trading.place_order(params)
-      |> dbg()
 
     {:noreply, stream_insert(socket, :orders, order, at: 0)}
   end
@@ -28,7 +33,7 @@ defmodule OrderBookWeb.OrdersLive do
       <.simple_form for={:order} id="order_form" phx-submit="place_order">
         <.input type="select" name="type" label="Type" options={~w"buy bell"} value={} />
         <.input type="number" name="quantity" label="Quantity (BTC)" id="amount" value={1} />
-        <.input type="number" name="price" label="Price" id="amount" value={1000} />
+        <.input type="number" name="price" label="Price" id="price" value={1000} />
         <:actions>
           <.button class="w-full" phx-disable-with="Placing">Place Order</.button>
         </:actions>

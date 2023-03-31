@@ -25,7 +25,8 @@ defmodule OrderBook.Trading.Aggregates.Account do
       amount: amount,
       currency: command.currency,
       old_balance: balance,
-      new_balance: balance - amount
+      new_balance: balance - amount,
+      reference_id: command.reference_id
     }
   end
 
