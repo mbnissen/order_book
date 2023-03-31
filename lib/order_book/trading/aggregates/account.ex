@@ -5,7 +5,7 @@ defmodule OrderBook.Trading.Aggregates.Account do
 
   alias OrderBook.Trading.Commands.DebitAccount
   alias OrderBook.Trading.Commands.OpenAccount
-  alias OrderBook.Trading.Events.{AccountOpened, AccountDebited, AccountDebitFailed}
+  alias OrderBook.Trading.Events.{AccountOpened, AccountDebited}
 
   def execute(%Account{id: nil}, %OpenAccount{} = command) do
     %AccountOpened{
@@ -32,10 +32,7 @@ defmodule OrderBook.Trading.Aggregates.Account do
         reference_id: command.reference_id
       }
     else
-      %AccountDebitFailed{
-        account_id: command.account_id,
-        reference_id: command.reference_id
-      }
+      {:error, :account_debit_failed}
     end
   end
 
@@ -52,6 +49,4 @@ defmodule OrderBook.Trading.Aggregates.Account do
   def apply(%Account{balance: balance} = account, %AccountDebited{amount: amount}) do
     %Account{account | balance: balance - amount}
   end
-
-  def apply(%Account{} = account, %AccountDebitFailed{}), do: account
 end

@@ -1,9 +1,8 @@
 defmodule OrderBook.Trading.ProcessManagers.OrderProcessManager do
-  alias __MODULE__
-
+  alias OrderBook.Trading.Events.OrderRejected
   alias OrderBook.Trading.ProcessManagers.OrderProcessManager
   alias OrderBook.Trading.Commands.{DebitAccount, RejectOrder}
-  alias OrderBook.Trading.Events.{AccountDebited, AccountDebitFailed, OrderPlaced}
+  alias OrderBook.Trading.Events.{AccountDebited, OrderPlaced}
 
   use Commanded.ProcessManagers.ProcessManager,
     application: OrderBook.App,
@@ -20,12 +19,8 @@ defmodule OrderBook.Trading.ProcessManagers.OrderProcessManager do
   # Process routing
 
   def interested?(%OrderPlaced{order_id: order_id}), do: {:start, order_id}
-
-  # {:continue, order_id}
   def interested?(%AccountDebited{reference_id: order_id}), do: {:stop, order_id}
-
-  def interested?(%AccountDebitFailed{reference_id: order_id}), do: {:continue, order_id}
-
+  def interested?(%OrderRejected{order_id: order_id}), do: {:stop, order_id}
   def interested?(_event), do: false
 
   # Command dispatch
@@ -35,10 +30,6 @@ defmodule OrderBook.Trading.ProcessManagers.OrderProcessManager do
     %OrderPlaced{order_id: order_id, account_id: account_id, quantity: quantity, currency: currency} = event
 
     %DebitAccount{account_id: account_id, amount: quantity, currency: currency, reference_id: order_id}
-  end
-
-  def handle(%OrderProcessManager{order_id: order_id}, %AccountDebitFailed{}) do
-    %RejectOrder{order_id: order_id}
   end
 
   # State mutators
@@ -53,7 +44,13 @@ defmodule OrderBook.Trading.ProcessManagers.OrderProcessManager do
     }
   end
 
-  def apply(%OrderProcessManager{} = order, %AccountDebitFailed{}) do
-    %OrderProcessManager{order | status: :withdraw_money_from_debit_account_failed}
+  # Error handlers
+  def error(
+        {:error, :account_debit_failed},
+        _command,
+        %{process_manager_state: %{order_id: order_id}} = failure_context
+      ) do
+    commands = [%RejectOrder{order_id: order_id}]
+    {:continue, commands, failure_context}
   end
 end
